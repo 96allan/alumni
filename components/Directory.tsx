@@ -4,6 +4,40 @@ import { alumni } from '../data/mockData';
 import { Alumnus } from '../types';
 import FadeInSection from './common/FadeInSection';
 
+const AlumniCard: React.FC<{ alumnus: Alumnus }> = ({ alumnus }) => {
+    const [connectionStatus, setConnectionStatus] = useState<'connect' | 'pending' | 'connected'>('connect');
+
+    const handleConnect = () => {
+        if (connectionStatus === 'connect') {
+            setConnectionStatus('pending');
+        }
+    };
+
+    return (
+        <div className="bg-white rounded-lg shadow-md p-5 text-center transform hover:scale-105 transition-all duration-300 flex flex-col h-full relative group">
+            <img src={alumnus.photoUrl} alt={alumnus.name} className="w-24 h-24 rounded-full mx-auto mb-4 object-cover border-4 border-gray-200" />
+            <h3 className="font-bold text-lg text-primary">{alumnus.name}</h3>
+            <p className="text-gray-600 text-sm">{alumnus.profession}</p>
+            <p className="text-gray-500 text-xs mt-1 mb-4">{alumnus.course} • {alumnus.graduationYear}</p>
+            
+            <div className="mt-auto pt-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                 <button 
+                    onClick={handleConnect}
+                    disabled={connectionStatus !== 'connect'}
+                    className={`w-full py-2 rounded-md text-sm font-semibold transition-colors ${
+                        connectionStatus === 'pending' 
+                        ? 'bg-gray-100 text-gray-500 cursor-default' 
+                        : 'bg-primary text-white hover:bg-blue-800'
+                    }`}
+                >
+                    {connectionStatus === 'connect' ? 'Connect' : 'Pending'}
+                </button>
+            </div>
+             <p className="text-gray-500 text-xs mt-2 absolute bottom-2 left-0 right-0 opacity-100 group-hover:opacity-0 transition-opacity">{alumnus.country}</p>
+        </div>
+    );
+};
+
 const Directory: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filters, setFilters] = useState({
@@ -68,14 +102,8 @@ const Directory: React.FC = () => {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {filteredAlumni.map(alumnus => (
-            <FadeInSection key={alumnus.id}>
-              <div className="bg-white rounded-lg shadow-md p-5 text-center transform hover:scale-105 transition-transform duration-300">
-                <img src={alumnus.photoUrl} alt={alumnus.name} className="w-24 h-24 rounded-full mx-auto mb-4 object-cover border-4 border-gray-200" />
-                <h3 className="font-bold text-lg text-primary">{alumnus.name}</h3>
-                <p className="text-gray-600 text-sm">{alumnus.profession}</p>
-                <p className="text-gray-500 text-xs mt-1">{alumnus.course} • {alumnus.graduationYear}</p>
-                <p className="text-gray-500 text-xs mt-1">{alumnus.country}</p>
-              </div>
+            <FadeInSection key={alumnus.id} className="h-full">
+              <AlumniCard alumnus={alumnus} />
             </FadeInSection>
           ))}
         </div>
